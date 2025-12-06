@@ -1,6 +1,7 @@
 # **Lenovo ThinkCentre Tiny Series Under-desk Mount**
 
-![Preview of the mount](./preview.png)
+![Preview of the mount as a singular](./preview.png)
+![Preview of a stack of mounts](./preview-stack.png)
 
 A parametric OpenSCAD model designed to mount a Lenovo ThinkCentre M75q (and similar Tiny series PCs) under a desk.
 
