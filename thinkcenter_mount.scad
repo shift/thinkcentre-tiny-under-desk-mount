@@ -24,6 +24,10 @@ bracket_depth = 30;
 wall_thick = 5;
 // Width of the mounting tabs
 tab_width = 15;
+// Clearance between the top of the PC and the desk surface
+airflow_gap = 10;
+// Width of the retaining clips/rails that hold the PC down
+retainer_clip_width = 3.0;
 
 /* [Security] */
 // Diameter of the locking screw hole (M5 = 5.2, M4 = 4.2)
@@ -37,7 +41,8 @@ $fn = 60;
 
 module main_body() {
     total_width = pc_width + (wall_thick * 2);
-    total_height = pc_height + (wall_thick); // Bottom wall only, top is open
+    // Total height now includes the bottom wall, the PC, and the airflow gap
+    total_height = pc_height + wall_thick + airflow_gap; 
     
     difference() {
         // Outer Shell
@@ -59,14 +64,29 @@ module main_body() {
             }
         }
 
-        // Inner Cutout (The PC Slot)
-        translate([-pc_width/2, wall_thick, -1])
-        cube([pc_width, pc_height + 10, bracket_depth + 2]);
+        // Inner Cutout (Stepped Profile)
+        union() {
+            // 1. The PC Slot (Wide bottom section)
+            translate([-pc_width/2, wall_thick, -1])
+            cube([pc_width, pc_height, bracket_depth + 2]);
+            
+            // 2. The Airflow Gap (Narrower top section to create retaining clips)
+            // The slot narrows by retainer_clip_width on both sides
+            translate([-(pc_width - 2*retainer_clip_width)/2, wall_thick + pc_height - 0.1, -1])
+            cube([pc_width - 2*retainer_clip_width, airflow_gap + 10, bracket_depth + 2]);
+        }
         
-        // Chamfer/Round the entry edges for easier insertion
-        // (Simple subtraction for clean slide-in)
+        // Chamfers (Bevels) for smooth insertion
+        
+        // 1. Bottom Floor Chamfer (Existing)
         translate([-pc_width/2, wall_thick-10, -5])
         rotate([-45, 0, 0])
+        cube([pc_width, 5, bracket_depth + 10]);
+
+        // 2. Top Retaining Clip Chamfer (New)
+        // Bevels the underside of the retaining rails
+        translate([-pc_width/2, wall_thick + pc_height + 10 - 2, -5])
+        rotate([-135, 0, 0]) // Angles the cut to slope the ceiling entry
         cube([pc_width, 5, bracket_depth + 10]);
 
         // Mounting Screw Holes (Countersunk)
