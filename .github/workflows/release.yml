@@ -1,0 +1,30 @@
+name: Release STL
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Install Nix
+      uses: cachix/install-nix-action@v22
+      with:
+        nix_path: nixpkgs=channel:nixos-unstable
+        
+    - name: Build STL
+      run: nix build
+      
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: result/thinkcentre_mount.stl
+        generate_release_notes: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
